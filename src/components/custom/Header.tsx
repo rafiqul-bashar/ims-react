@@ -11,8 +11,11 @@ import {
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Input } from "../ui/input";
+import { useUserStore } from "@/store/rootStore";
 
 export default function Header() {
+  const callLogout = useUserStore((state) => state.logout);
+
   return (
     <header className="bg-gray-50 ">
       <div className="mx-auto max-w-screen-xl px-4 py-3 sm:px-6 lg:px-8 ">
@@ -62,7 +65,7 @@ export default function Header() {
                 </DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => {}}>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={callLogout}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -1,6 +1,7 @@
+import { useUserStore } from "@/store/rootStore";
 import { Navigate, Outlet } from "react-router-dom";
 
 export default function PrivateRoutes() {
-  let auth = { user: true };
-  return auth.user ? <Outlet /> : <Navigate to="/login" />;
+  const authenticated = useUserStore((state) => state.authenticated);
+  return authenticated ? <Outlet /> : <Navigate to="/login" />;
 }

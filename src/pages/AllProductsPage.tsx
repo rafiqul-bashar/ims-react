@@ -27,10 +27,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function AllProductsPage() {
   const [products, setProducts] = React.useState([]);
-
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [startIndex, setStartIndex] = React.useState(0);
+  const rowsPerPage = 10;
+  const [endIndex, setEndIndex] = React.useState(rowsPerPage);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const numbersArray = Array.from(
+    { length: products?.length / rowsPerPage },
+    (_, index) => index + 1
+  );
   React.useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -47,17 +62,52 @@ export default function AllProductsPage() {
 
     fetchProducts();
   }, []);
+
+  const handlePaginationIndex = (direction) => {
+    if (direction === "prev") {
+      setStartIndex(startIndex - rowsPerPage);
+      setEndIndex(endIndex - rowsPerPage);
+      setCurrentPage(currentPage - 1);
+    } else {
+      setStartIndex(startIndex + rowsPerPage); //10
+      setEndIndex(endIndex + rowsPerPage); //10 + 10 = 20
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  const handlePaginationNumberButtons = (i) => {
+    setCurrentPage(i + 1);
+    setStartIndex(i * rowsPerPage);
+    setEndIndex(i * rowsPerPage + rowsPerPage);
+  };
+  const handleSearch = (e) => {
+    e.preventDefault();
+  };
+  const filterProducts = () => {
+    if (!searchTerm) {
+      // If no search query, return all products
+      return products;
+    }
+
+    return products.filter((product) =>
+      product.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
   return (
     <div className="flex flex-col sm:gap-4 sm:py-4  overflow-x-scroll ">
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-        <div className="relative ml-auto flex-1 md:grow-0">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search..."
-            className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-          />
-        </div>
+        <form onSubmit={handleSearch}>
+          <div className="relative ml-auto flex-1 md:grow-0">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+            />
+          </div>
+        </form>
         <div className="flex items-center">
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" className="h-8 gap-1">
@@ -116,56 +166,110 @@ export default function AllProductsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products?.map((product, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="hidden sm:table-cell">
-                      <img
-                        alt={product?.title}
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        src={product?.image}
-                        width="64"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {product?.title}
-                    </TableCell>
-                    <TableCell className="capitalize">
-                      {product?.category}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      ${product?.price}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">100</TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      2023-10-18 03:21 PM
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="rounded-none text-xs  px-4 py-1"
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          className="rounded-none text-xs  px-4 py-1"
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {filterProducts()
+                  ?.slice(startIndex, endIndex)
+                  .map((product, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="hidden sm:table-cell">
+                        <img
+                          alt={product?.title}
+                          className="aspect-square rounded-md object-cover"
+                          height="64"
+                          src={product?.image}
+                          width="64"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {product?.title}
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {product?.category}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        ${product?.price}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        100
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        2023-10-18 03:21 PM
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-none text-xs  px-4 py-1"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="rounded-none text-xs  px-4 py-1"
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
+            <Pagination>
+              {!searchTerm && (
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      className={
+                        startIndex === 0
+                          ? "pointer-events-none opacity-50"
+                          : undefined
+                      }
+                      onClick={() => {
+                        handlePaginationIndex("prev");
+                      }}
+                    />
+                  </PaginationItem>
+                  <PaginationItem>
+                    {numbersArray.map((number, i) => (
+                      <Button
+                        className={currentPage === number ? "bg-gray-50" : ""}
+                        variant={currentPage === number ? "outline" : "ghost"}
+                        key={number}
+                        onClick={() => handlePaginationNumberButtons(i)}
+                      >
+                        {number}
+                      </Button>
+                    ))}
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext
+                      className={
+                        endIndex === products?.length
+                          ? "pointer-events-none opacity-50"
+                          : undefined
+                      }
+                      onClick={() => {
+                        handlePaginationIndex("next");
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              )}
+            </Pagination>
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">
-              Showing <strong>1-10</strong> of <strong>32</strong> products
+              Showing{" "}
+              {searchTerm ? (
+                <strong>all </strong>
+              ) : (
+                <strong>
+                  {startIndex + 1}-{endIndex}{" "}
+                </strong>
+              )}
+              of <strong>{filterProducts()?.length}</strong> products
             </div>
           </CardFooter>
         </Card>
