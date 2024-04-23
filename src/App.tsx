@@ -9,6 +9,10 @@ import {
   NotFound,
   SettingsPage,
   RegisterPage,
+  ManageStores,
+  ReportPage,
+  SuppliersPage,
+  OrderPage,
 } from "./pages";
 import PrivateRoutes from "./components/custom/PrivateRoutes";
 import PublicRoutes from "./components/custom/PublicRoutes";
@@ -19,9 +23,13 @@ function App() {
       <Route element={<PrivateRoutes />}>
         <Route path="/" element={<Layout />}>
           <Route path="" element={<HomePage />} />
-          <Route path="settings" element={<SettingsPage />} />
           <Route path="products" element={<AllProductsPage />} />
           <Route path="products/:id" element={<SingleProductPage />} />
+          <Route path="reports" element={<ReportPage />} />
+          <Route path="suppliers" element={<SuppliersPage />} />
+          <Route path="orders" element={<OrderPage />} />
+          <Route path="manage-store" element={<ManageStores />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Route>
       <Route element={<PublicRoutes />}>
