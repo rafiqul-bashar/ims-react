@@ -10,6 +10,7 @@ import OrderPage from "./OrderPage";
 import ReportPage from "./ReportPage";
 import SuppliersPage from "./SuppliersPage";
 import ManageStores from "./ManageStores";
+import SingleStoreSetting from "./SingleStoreSetting";
 
 export {
   ManageStores,
@@ -24,4 +25,5 @@ export {
   ReportPage,
   SuppliersPage,
   OrderPage,
+  SingleStoreSetting,
 };

@@ -1,7 +1,7 @@
 import Header from "@/components/custom/Header";
 import SideBar from "@/components/custom/SideBar";
-import { Outlet } from "react-router-dom";
 
+import { Outlet } from "react-router-dom";
 export default function Layout() {
   return (
     <>

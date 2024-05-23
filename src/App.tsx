@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import {
   Layout,
@@ -13,22 +12,67 @@ import {
   ReportPage,
   SuppliersPage,
   OrderPage,
+  SingleStoreSetting,
 } from "./pages";
 import PrivateRoutes from "./components/custom/PrivateRoutes";
 import PublicRoutes from "./components/custom/PublicRoutes";
+import CheckingForStore from "./components/custom/CheckingForStore";
 
 function App() {
   return (
     <Routes>
       <Route element={<PrivateRoutes />}>
         <Route path="/" element={<Layout />}>
-          <Route path="" element={<HomePage />} />
-          <Route path="products" element={<AllProductsPage />} />
-          <Route path="products/:id" element={<SingleProductPage />} />
-          <Route path="reports" element={<ReportPage />} />
-          <Route path="suppliers" element={<SuppliersPage />} />
-          <Route path="orders" element={<OrderPage />} />
+          <Route
+            path=""
+            element={
+              <CheckingForStore>
+                <HomePage />
+              </CheckingForStore>
+            }
+          />
+          <Route
+            path="products"
+            element={
+              <CheckingForStore>
+                <AllProductsPage />
+              </CheckingForStore>
+            }
+          />
+          <Route
+            path="products/:id"
+            element={
+              <CheckingForStore>
+                <SingleProductPage />
+              </CheckingForStore>
+            }
+          />
+          <Route
+            path="reports"
+            element={
+              <CheckingForStore>
+                <ReportPage />
+              </CheckingForStore>
+            }
+          />
+          <Route
+            path="suppliers"
+            element={
+              <CheckingForStore>
+                <SuppliersPage />
+              </CheckingForStore>
+            }
+          />
+          <Route
+            path="orders"
+            element={
+              <CheckingForStore>
+                <OrderPage />
+              </CheckingForStore>
+            }
+          />
           <Route path="manage-store" element={<ManageStores />} />
+          <Route path="manage-store/:name" element={<SingleStoreSetting />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Route>

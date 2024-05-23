@@ -40,7 +40,7 @@ const navLinks = [
   },
   {
     path: "/manage-store",
-    name: "Manage Store",
+    name: "Manage Stores",
 
     icon: <ReceiptText className=" w-6  h-6" />,
   },
@@ -48,9 +48,10 @@ const navLinks = [
 
 export default function SideBar() {
   return (
-    <aside className="sticky left-0 top-0 h-screen bg-blue-300 flex flex-col justify-between bg-white">
+    <aside className="sticky left-0 top-0 h-screen flex flex-col justify-between bg-white">
       <nav className=" flex-1 ">
-        <p className="py-7 w-full bg-pink-300">Logo </p>
+        {/* <p className="py-7 w-full bg-pink-300">Logo </p> */}
+        <img src="/Logo.png" alt="header_logo" className=" mx-auto h-20 pt-4" />
         <ul className="space-y-6 pt-4">
           {navLinks.map((link, index) => (
             <li key={index} className="">
@@ -94,5 +95,5 @@ export default function SideBar() {
 
       </div>
     </aside>
-  );
+  )
 }

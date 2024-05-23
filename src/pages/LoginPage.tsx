@@ -6,58 +6,57 @@ import {
   CardContent,
   Card,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { GoalIcon } from "lucide-react";
-import { useUserStore } from "@/store/rootStore";
-import * as z from "zod";
-import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
-//  form validation
+import { z } from "zod";
+import { GoalIcon } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useAuthStore } from "@/store/authStore";
+import { adminUser } from "@/utils/constants";
 
-const formSchema = z.object({
-  emailAddress: z.string().email(),
+const schema = z.object({
+  email: z.string({ invalid_type_error: "Email should not be empty" }).email(),
   password: z
-    .string()
-    .min(6, { message: "Password should be at least 6 characters" }),
+    .string({ invalid_type_error: "Password should not be empty" })
+    .min(6),
 });
 
 export default function LoginPage() {
-  const loginDataToState = useUserStore((state) => state.login);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      emailAddress: "",
-      password: "",
-    },
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const setUser = useAuthStore((state) => state.SAVE_USER_TO_STORE);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
   });
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log({ values });
+  const loginWithGoogle = () => {
+    alert("Google Login");
+  };
+  const processForm = async (data) => {
+    setIsSubmitting(true);
+    try {
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      reset();
+      setIsSubmitting(false);
+    }
   };
 
   const handleDemoLogin = () => {
-    // Simulated login process, replace this with actual authentication logic
-    const userData = {
-      id: 1,
-      username: "john_doe",
-      email: "john@example.com",
-      age: 30,
-      isAdmin: false,
-    };
-
-    // Call the login function from the Zustand user store and pass the user data
-    loginDataToState(userData);
+    setUser(adminUser);
   };
+
+  console.log("login page");
   return (
     <section className=" w-sceen h-screen grid content-center">
       <div className="max-w-3xl w-full mx-auto flex flex-col md:flex-row md:items-center md:justify-center ">
@@ -67,90 +66,71 @@ export default function LoginPage() {
           className="hidden md:block scale-75 mx-auto"
         />
         <main className="md:ml-auto">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)}>
-              <Card className="mx-auto md:w-[30vw]  text-gray-800  border-0 rounded-none">
-                <CardHeader className="space-y-2">
-                  <img
-                    alt=""
-                    src="/Logo.png"
-                    className="mx-auto my-4 w-16 h-20"
-                  />
-                  <CardTitle className="text-2xl font-semibold text-center">
-                    Log in to your account
-                  </CardTitle>
-                  <CardDescription className="text-center">
-                    Welcome back! Please enter your details.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="emailAddress"
-                      render={({ field }) => {
-                        return (
-                          <FormItem>
-                            <FormLabel>Email address</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Email address"
-                                type="email"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => {
-                        return (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Password"
-                                type="password"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                    <div className="flex items-center justify-between text-sm text-blue-600">
-                      <Link to="#"> Forgot Password?</Link>
-                    </div>
-                    <Button className="w-full" type="submit">
-                      Login
-                    </Button>
-                    <Button
-                      onClick={handleDemoLogin}
-                      className="w-full"
-                      type="submit"
-                    >
-                      Demo Account
-                    </Button>
-                    <Button className="w-full" type="submit" variant="outline">
-                      <GoalIcon className="mr-2" />
-                      Sign In with Google
-                    </Button>
-                    <p className="text-gray-600 text-sm text-center">
-                      Dont have an account?{" "}
-                      <span className="text-blue-500 font-semibold">
-                        <Link to="/register"> Sign Up</Link>
-                      </span>
-                    </p>
+          <form onSubmit={handleSubmit(processForm)}>
+            <Card className="mx-auto md:w-[30vw]  text-gray-800  border-0 rounded-none">
+              <CardHeader className="space-y-2">
+                <img
+                  alt=""
+                  src="/Logo.png"
+                  className="mx-auto my-4 w-16 h-20"
+                />
+                <CardTitle className="text-2xl font-semibold text-center">
+                  Log in to your account
+                </CardTitle>
+                <CardDescription className="text-center">
+                  Welcome back! Please enter your details.
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="flex flex-col gap-3">
+                <p className="text-sm py-2 text-gray-600">
+                  * All the CRUD operation in disabled in Demo account
+                </p>
+                <label>Email</label>
+                <Input
+                  {...register("email", { required: true })}
+                  name="email"
+                  type="email"
+                />
+
+                {errors.email && (
+                  <div className="text-red-500">{errors.email.message}</div>
+                )}
+                <label>Password</label>
+                <Input
+                  {...register("password", { required: true, minLength: 6 })}
+                  name="password"
+                  type="password"
+                />
+                {errors.password && (
+                  <div className="text-red-500">
+                    <span>Password should be 6 characters minimum</span>
                   </div>
-                </CardContent>
-              </Card>
-            </form>
-          </Form>
+                )}
+                <Button disabled={isSubmitting} type="submit">
+                  {isSubmitting ? "Loading..." : "Log In"}
+                </Button>
+
+                <Button
+                  onClick={loginWithGoogle}
+                  className="w-full"
+                  variant="secondary"
+                >
+                  <GoalIcon className="mr-2" />
+                  Sign In with Google
+                </Button>
+
+                <Button onClick={handleDemoLogin}>Demo Account</Button>
+
+                <p className="text-gray-600 text-sm text-center">
+                  New Here?{" "}
+                  <span className="text-blue-500 font-semibold">
+                    <Link to="/register"> Create an account</Link>
+                  </span>
+                </p>
+              </CardContent>
+            </Card>
+          </form>
         </main>
       </div>
     </section>
